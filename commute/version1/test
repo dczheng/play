@@ -1,0 +1,7 @@
+#!/usr/bin/python
+import comm_f
+testinput="bbabaabab"
+testoutput=comm_f.comm_f(testinput)
+for i in testoutput:
+	print i
+
