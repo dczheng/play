@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 import socket
 import threading
-import sys
-import os
 
 max_len_data = 1024
 
