@@ -5,13 +5,15 @@ import sys
 import os
 
 max_len_data = 1024
+
 def my_recv( client ):
     while True:
         try:
             recv = client.recv( max_len_data ).decode( 'utf-8' )
         except OSError:
             return
-        print( '\r' + recv + '\nme: ', end='' )
+        if len(recv) != 0:
+            print( '\r' + recv + '\nme: ', end='' )
 
 def main():
 
@@ -45,7 +47,7 @@ def main():
         r = client.recv( max_len_data ).decode( 'utf-8' )
         if r == 'Ok':
             break
-        print( '%s exist!'%username )
+        print( '`%s` exist!'%username )
 
 
     t = threading.Thread( target=my_recv, args=(client,) )

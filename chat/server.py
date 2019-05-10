@@ -24,7 +24,7 @@ def session( users, user, client ):
         send = '%s: '%user + recv
 
         if recv == 'session_close':
-            send = '%s: exit'%user
+            send = '%s: logout'%user
 
         for u in users.keys():
             if u == user:
@@ -32,8 +32,11 @@ def session( users, user, client ):
             users[u][0].send( send.encode( 'utf-8' ) )
 
         if recv == 'session_close':
-            print( 'user `%s` exit'%user )
+            print( 'user `%s` logout'%user )
             del( users[user] )
+            t = 'Online users: ' + ','.join( list(users.keys()) )
+            for u in users.keys():
+                users[u][0].send( t.encode( 'utf-8' ) )
             break
     client.close()
 
@@ -61,8 +64,9 @@ def new_session( users, client, addr ):
     t.start()
 
 def main():
-    host = 'localhost'
-    port = int( input('port: ') )
+    address = input('address: ')
+    host,port = address.split( ':' )
+    port = int(port)
     server = server_init( host, port )
 
     users = {}
