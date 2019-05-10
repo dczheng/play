@@ -13,28 +13,45 @@ def server_init( host, port ):
     #client, addr = server.accept()
     return server
 
+def make_data( s, h=0 ):
+    if len(s) == 0:
+        s = ' '
+    r = '%i%s'%(h,s)
+    return r
+
+def get_data( s ):
+    if len(s) == 1:
+        s += ' '
+    return ( s[0], s[1:] )
+
 def session( users, user, client ):
 
     t = '`%s` login\n'%user + 'Online users: ' + ','.join( list(users.keys()) )
+    t = make_data( t, 1 )
     for u in users.keys():
         users[u][0].send( t.encode( 'utf-8' ) )
 
     while True:
         recv = client.recv(max_len_data).decode( 'utf-8' )
+        h, recv = get_data( recv )
         send = '%s: '%user + recv
+        send = make_data( send )
 
-        if recv == 'session_close':
-            send = '%s: logout'%user
 
         for u in users.keys():
+            if h == '2':
+                continue
             if u == user:
                 continue
             users[u][0].send( send.encode( 'utf-8' ) )
 
-        if recv == 'session_close':
+        if h == '2':
             print( 'user `%s` logout'%user )
             del( users[user] )
-            t = 'Online users: ' + ','.join( list(users.keys()) )
+            print( 'online users: ', list(users.keys()) )
+
+            t = '`%s` logout\n'%user + 'Online users: ' + ','.join( list(users.keys()) )
+            t = make_data( t, 1 )
             for u in users.keys():
                 users[u][0].send( t.encode( 'utf-8' ) )
             break
@@ -45,21 +62,25 @@ def session( users, user, client ):
 def new_session( users, client, addr ):
     #print( 'users: ', users.keys() )
     while True:
-        user = client.recv( max_len_data ).decode( 'utf-8' )
-        if user == 'session_close':
+        data = client.recv( max_len_data ).decode( 'utf-8' )
+        h, user = get_data( data )
+        if h == '2':
             client.close()
             return
         if user in users.keys():
-            client.send( 'Failed'.encode( 'utf-8' ) )
+            t = make_data( ' ', 4 )
+            client.send( t.encode( 'utf-8' ) )
         else:
-            client.send( 'Ok'.encode( 'utf-8' ) )
+            t = make_data( ' ', 3 )
+            client.send( t.encode( 'utf-8' ) )
             break
 
     print( 'user: `%s` login'%user )
     #print( 'user: %s, password: %s'%(user,password) )
 
+    users[user] = [ client,  addr, t ]
+    sleep(1)
     t = threading.Thread( target=session, args=(users, user, client) )
-    users[user] = [ client, addr, t ]
     print( 'online users: ', list(users.keys()) )
     t.start()
 
