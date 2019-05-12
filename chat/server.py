@@ -41,8 +41,8 @@ def session( users, user, client ):
         for u in users.keys():
             if h == '2':
                 continue
-            if u == user:
-                continue
+            #if u == user:
+            #    continue
             users[u][0].send( send.encode( 'utf-8' ) )
 
         if h == '2':
