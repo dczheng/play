@@ -90,6 +90,7 @@ class sudoku:
         return True
 
     def check( self, ii, jj, v ):
+        # add extra rules in this function
         if ( v in self[ii,:] ) or ( v in self[:,jj] ):
             return False
         return True
