@@ -103,9 +103,9 @@ class sudoku:
         print( "can not solve!" )
 
     def _solve( self, l ):
+
         ii = l // self.N
         jj = l % self.N
-
         #print( l )
         #print( self )
 
